@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>EarnTaskPro - Master Admin Suite</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { background-color: #070b13; color: #94a3b8; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    .card-bg { background-color: #0d1527; border: 1px solid #1a2642; }
+    .input-box { background-color: #090f1d; border: 1px solid #1e2d4a; color: #fff; }
+    .input-box:focus { border-color: #a855f7; outline: none; }
+  </style>
+</head>
+<body class="p-6">
+  <div class="max-w-7xl mx-auto space-y-8">
+    <header class="flex justify-between items-center border-b border-[#162035] pb-4">
+      <div>
+        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+          <i data-lucide="shield" class="text-purple-400"></i> EarnTaskPro - Master Admin Suite
+        </h1>
+        <p class="text-xs text-gray-400">Central Control Panel: Live Task Manager & Mobile Banking Approvals</p>
+      </div>
+      <a href="/" target="_blank" class="px-4 py-2 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-lg text-xs font-semibold hover:bg-emerald-500/30 flex items-center gap-1.5">
+        <span>Go to User Website</span>
+        <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+      </a>
+    </header>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Edit Payment Numbers & Telegram -->
+      <section class="card-bg p-6 rounded-2xl space-y-4">
+        <h2 class="text-base font-semibold text-white flex items-center gap-2">
+          <i data-lucide="phone-call" class="text-emerald-400 w-4 h-4"></i> Payment Numbers & Support Links
+        </h2>
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="block text-gray-400 mb-1">bKash Personal Line</label>
+            <input type="text" id="admBkash" class="w-full input-box p-2.5 rounded-lg font-mono">
+          </div>
+          <div>
+            <label class="block text-gray-400 mb-1">Nagad Personal Line</label>
+            <input type="text" id="admNagad" class="w-full input-box p-2.5 rounded-lg font-mono">
+          </div>
+          <div>
+            <label class="block text-gray-400 mb-1">Rocket Personal Line</label>
+            <input type="text" id="admRocket" class="w-full input-box p-2.5 rounded-lg font-mono">
+          </div>
+          <div>
+            <label class="block text-gray-400 mb-1">Telegram Support Channel Link</label>
+            <input type="text" id="admTelegram" placeholder="https://t.me/your_channel" class="w-full input-box p-2.5 rounded-lg">
+          </div>
+          <div>
+            <label class="block text-gray-400 mb-1">Live Notice Announcement</label>
+            <textarea id="admNotice" rows="2" class="w-full input-box p-2.5 rounded-lg"></textarea>
+          </div>
+          <button onclick="saveSettings()" class="w-full py-2.5 bg-emerald-500 hover:bg-emerald-600 text-gray-950 font-bold rounded-lg transition">
+            Save Settings to Database
+          </button>
+        </div>
+      </section>
+
+      <!-- Add New Task -->
+      <form onsubmit="handleAddTask(event)" class="card-bg p-6 rounded-2xl space-y-4">
+        <h2 class="text-base font-semibold text-white flex items-center gap-2">
+          <i data-lucide="plus-circle" class="text-cyan-400 w-4 h-4"></i> Add New Task
+        </h2>
+        <div class="space-y-3 text-xs">
+          <div>
+            <label class="block text-gray-400 mb-1">Task Title</label>
+            <input type="text" id="tTitle" required placeholder="e.g. AI Sentiment Review: Smartphone" class="w-full input-box p-2.5 rounded-lg">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-gray-400 mb-1">Reward (৳ BDT)</label>
+              <input type="number" id="tReward" required placeholder="15" class="w-full input-box p-2.5 rounded-lg">
+            </div>
+            <div>
+              <label class="block text-gray-400 mb-1">Duration (Seconds)</label>
+              <input type="number" id="tDuration" required placeholder="15" class="w-full input-box p-2.5 rounded-lg">
+            </div>
+          </div>
+          <div>
+            <label class="block text-gray-400 mb-1">Category</label>
+            <select id="tCategory" class="w-full input-box p-2.5 rounded-lg">
+              <option value="AI Micro-Tasks">AI Micro-Tasks</option>
+              <option value="Sponsored Video">Sponsored Video</option>
+              <option value="Partner Articles">Partner Articles</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-gray-400 mb-1">Description / Content Quote</label>
+            <textarea id="tDesc" required rows="2" placeholder="Task details or review quote..." class="w-full input-box p-2.5 rounded-lg"></textarea>
+          </div>
+          <button type="submit" class="w-full py-2.5 bg-cyan-500 hover:bg-cyan-600 text-gray-950 font-bold rounded-lg transition">
+            Publish Live Task
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- User Management Section (Ban / Unban) -->
+    <section class="card-bg p-6 rounded-2xl space-y-4">
+      <h2 class="text-base font-semibold text-white flex items-center justify-between">
+        <span class="flex items-center gap-2"><i data-lucide="users" class="text-emerald-400 w-4 h-4"></i> Registered Users Directory</span>
+        <span id="userCountBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-300">0 Users</span>
+      </h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="text-gray-400 border-b border-[#1a2642]">
+            <tr>
+              <th class="py-2.5 px-2">Name</th>
+              <th class="py-2.5 px-2">Phone</th>
+              <th class="py-2.5 px-2">Email</th>
+              <th class="py-2.5 px-2">Balance</th>
+              <th class="py-2.5 px-2">Plan</th>
+              <th class="py-2.5 px-2">Status</th>
+              <th class="py-2.5 px-2 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminUsersTable" class="divide-y divide-[#162035] text-gray-300"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Active Tasks Management Table -->
+    <section class="card-bg p-6 rounded-2xl space-y-4">
+      <h2 class="text-base font-semibold text-white flex items-center justify-between">
+        <span class="flex items-center gap-2"><i data-lucide="list" class="text-amber-400 w-4 h-4"></i> Active Tasks Visible to Users</span>
+        <span id="taskCountBadge" class="text-xs px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300">0 Tasks</span>
+      </h2>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+          <thead class="text-gray-400 border-b border-[#1a2642]">
+            <tr>
+              <th class="py-2.5 px-2">Title</th>
+              <th class="py-2.5 px-2">Category</th>
+              <th class="py-2.5 px-2">Duration</th>
+              <th class="py-2.5 px-2">Reward</th>
+              <th class="py-2.5 px-2 text-right">Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminTasksTable" class="divide-y divide-[#162035] text-gray-300"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Approvals Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Deposit Requests -->
+      <section class="card-bg p-6 rounded-2xl space-y-4">
+        <h2 class="text-base font-semibold text-emerald-400 flex items-center gap-2">
+          <i data-lucide="arrow-down-left" class="w-4 h-4"></i> Pending Deposits (Waiting Approval)
+        </h2>
+        <div id="pendingDepositsList" class="space-y-3 text-xs"></div>
+      </section>
+
+      <!-- Cashout Requests -->
+      <section class="card-bg p-6 rounded-2xl space-y-4">
+        <h2 class="text-base font-semibold text-sky-400 flex items-center gap-2">
+          <i data-lucide="arrow-up-right" class="w-4 h-4"></i> Pending Cashouts (Waiting Disbursement)
+        </h2>
+        <div id="pendingCashoutsList" class="space-y-3 text-xs"></div>
+      </section>
+    </div>
+  </div>
+
+  <script>
+    async function loadAdminData() {
+      try {
+        const res = await fetch("/api/admin");
+        const data = await res.json();
+
+        if (data.settings) {
+          document.getElementById("admBkash").value = data.settings.bkash || "";
+          document.getElementById("admNagad").value = data.settings.nagad || "";
+          document.getElementById("admRocket").value = data.settings.rocket || "";
+          document.getElementById("admTelegram").value = data.settings.telegram_link || "";
+          document.getElementById("admNotice").value = data.settings.notice || "";
+        }
+
+        // Render Users
+        const userTbody = document.getElementById("adminUsersTable");
+        userTbody.innerHTML = "";
+        document.getElementById("userCountBadge").innerText = `${data.users.length} Users`;
+        data.users.forEach(u => {
+          userTbody.innerHTML += `
+            <tr>
+              <td class="py-2 px-2 text-white font-medium">${u.full_name}</td>
+              <td class="py-2 px-2 font-mono">${u.phone}</td>
+              <td class="py-2 px-2 text-gray-400">${u.email}</td>
+              <td class="py-2 px-2 text-emerald-400 font-bold font-mono">৳${Number(u.balance).toFixed(2)}</td>
+              <td class="py-2 px-2 text-purple-400">${u.membership}</td>
+              <td class="py-2 px-2">
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.is_banned ? 'bg-red-950 text-red-400' : 'bg-emerald-950 text-emerald-400'}">
+                  ${u.is_banned ? 'BANNED' : 'ACTIVE'}
+                </span>
+              </td>
+              <td class="py-2 px-2 text-right">
+                <button onclick="toggleBan('${u.phone}', ${!u.is_banned})" class="px-2.5 py-1 text-[11px] rounded font-semibold ${u.is_banned ? 'bg-emerald-950 text-emerald-400 border border-emerald-500/30' : 'bg-red-950 text-red-400 border border-red-500/30'}">
+                  ${u.is_banned ? 'Unban' : 'Ban'}
+                </button>
+              </td>
+            </tr>`;
+        });
+
+        // Render Tasks
+        const taskTbody = document.getElementById("adminTasksTable");
+        taskTbody.innerHTML = "";
+        document.getElementById("taskCountBadge").innerText = `${data.tasks.length} Tasks`;
+        data.tasks.forEach(t => {
+          taskTbody.innerHTML += `
+            <tr>
+              <td class="py-2.5 px-2 text-white font-medium">${t.title}</td>
+              <td class="py-2.5 px-2 text-gray-400">${t.category}</td>
+              <td class="py-2.5 px-2 font-mono">${t.duration}s</td>
+              <td class="py-2.5 px-2 text-emerald-400 font-bold font-mono">৳${t.reward}</td>
+              <td class="py-2.5 px-2 text-right">
+                <button onclick="deleteTask(${t.id})" class="px-2 py-1 bg-red-950 text-red-400 border border-red-500/30 rounded hover:bg-red-900/40">Delete</button>
+              </td>
+            </tr>`;
+        });
+
+        // Render Pending Requests
+        const depBox = document.getElementById("pendingDepositsList");
+        const wdBox = document.getElementById("pendingCashoutsList");
+        depBox.innerHTML = "";
+        wdBox.innerHTML = "";
+
+        const deposits = data.pending.filter(p => p.type === 'deposit');
+        const withdraws = data.pending.filter(p => p.type === 'withdraw');
+
+        if (deposits.length === 0) depBox.innerHTML = `<p class="py-3 text-center text-gray-500">No pending deposit requests.</p>`;
+        deposits.forEach(d => {
+          depBox.innerHTML += `
+            <div class="p-3 bg-[#090f1d] border border-[#1e2d4a] rounded-xl flex justify-between items-center">
+              <div>
+                <span class="text-white font-bold">${d.provider} - ৳${d.amount}</span>
+                <p class="text-[11px] text-gray-400">User: <span class="font-mono text-gray-200">${d.user_phone}</span></p>
+                <p class="text-[11px] text-emerald-400 font-mono">TrxID: ${d.trx_id} • Sender: ${d.sender_or_recipient}</p>
+                <p class="text-[10px] text-purple-400">Target Plan: ${d.plan}</p>
+              </div>
+              <div class="flex gap-1.5">
+                <button onclick="resolveRequest(${d.id}, 'approved')" class="px-3 py-1 bg-emerald-500 hover:bg-emerald-600 text-gray-950 font-bold rounded">Approve</button>
+                <button onclick="resolveRequest(${d.id}, 'rejected')" class="px-2 py-1 bg-red-950 text-red-400 rounded">Reject</button>
+              </div>
+            </div>`;
+        });
+
+        if (withdraws.length === 0) wdBox.innerHTML = `<p class="py-3 text-center text-gray-500">No pending cashout requests.</p>`;
+        withdraws.forEach(w => {
+          wdBox.innerHTML += `
+            <div class="p-3 bg-[#090f1d] border border-[#1e2d4a] rounded-xl flex justify-between items-center">
+              <div>
+                <span class="text-white font-bold">${w.provider} - ৳${w.amount}</span>
+                <p class="text-[11px] text-gray-400">User: <span class="font-mono text-gray-200">${w.user_phone}</span></p>
+                <p class="text-[11px] text-sky-400 font-mono">Send money to: ${w.sender_or_recipient}</p>
+              </div>
+              <div class="flex gap-1.5">
+                <button onclick="resolveRequest(${w.id}, 'approved')" class="px-3 py-1 bg-sky-500 hover:bg-sky-600 text-gray-950 font-bold rounded">Paid & Approve</button>
+                <button onclick="resolveRequest(${w.id}, 'rejected')" class="px-2 py-1 bg-red-950 text-red-400 rounded">Reject & Refund</button>
+              </div>
+            </div>`;
+        });
+
+        lucide.createIcons();
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function toggleBan(phone, is_banned) {
+      const res = await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "toggle_ban", payload: { phone, is_banned } })
+      });
+      if (res.ok) {
+        alert(is_banned ? "User has been banned!" : "User has been unbanned!");
+        loadAdminData();
+      }
+    }
+
+    async function saveSettings() {
+      const res = await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "save_settings",
+          payload: {
+            bkash: document.getElementById("admBkash").value.trim(),
+            nagad: document.getElementById("admNagad").value.trim(),
+            rocket: document.getElementById("admRocket").value.trim(),
+            telegram_link: document.getElementById("admTelegram").value.trim(),
+            notice: document.getElementById("admNotice").value.trim()
+          }
+        })
+      });
+      if (res.ok) alert("Settings saved to Cloud Database!");
+    }
+
+    async function handleAddTask(e) {
+      e.preventDefault();
+      const res = await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "add_task",
+          payload: {
+            title: document.getElementById("tTitle").value.trim(),
+            reward: document.getElementById("tReward").value,
+            duration: document.getElementById("tDuration").value,
+            category: document.getElementById("tCategory").value,
+            description: document.getElementById("tDesc").value.trim()
+          }
+        })
+      });
+      if (res.ok) {
+        alert("Task published!");
+        document.getElementById("tTitle").value = "";
+        document.getElementById("tReward").value = "";
+        document.getElementById("tDuration").value = "";
+        document.getElementById("tDesc").value = "";
+        loadAdminData();
+      }
+    }
+
+    async function deleteTask(id) {
+      if (!confirm("Are you sure you want to delete this task?")) return;
+      await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "delete_task", payload: { id } })
+      });
+      loadAdminData();
+    }
+
+    async function resolveRequest(id, status) {
+      const res = await fetch("/api/admin", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "resolve_transaction", payload: { id, status } })
+      });
+      if (res.ok) {
+        alert(`Transaction marked as ${status}!`);
+        loadAdminData();
+      }
+    }
+
+    loadAdminData();
+  </script>
+</body>
+</html>
